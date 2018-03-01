@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RentMasters.Models.Database;
 
 namespace RentMasters
 {
@@ -23,6 +25,9 @@ namespace RentMasters
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            var dbConnecionString = @"Server=(localdb)\mssqllocaldb;Database=RentMastersDB;Trusted_Connection=True";
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(dbConnecionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
