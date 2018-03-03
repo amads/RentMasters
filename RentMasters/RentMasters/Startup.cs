@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RentMasters.Models.Database;
+using RentMasters.Models.Interfaces;
+using RentMasters.Models.Repositories;
 
 namespace RentMasters
 {
@@ -28,6 +30,8 @@ namespace RentMasters
 
             var dbConnecionString = @"Server=(localdb)\mssqllocaldb;Database=RentMastersDB;Trusted_Connection=True";
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(dbConnecionString));
+
+            services.AddScoped<IPropertyRepository, PropertyRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
