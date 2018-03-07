@@ -16,46 +16,85 @@ namespace RentMasters.Models.Repositories
             _databaseContext = databaseContext;
         }
 
-        public List<Property> GetAll()
+        public List<Property> GetAllProperties()
         {
             return _databaseContext.Properties.ToList();
         }
 
         public Property GetPropertyById(int propertyId)
         {
+            if(propertyId <= 0)
+            {
+                throw new Exception("Id cannot be less than 0.");
+            }
+
             return _databaseContext.Properties.Where(property => property.Id == propertyId).FirstOrDefault();
         }
 
-        public void AddNewProperty(Property property)
+        public int AddNewProperty(Property property, Address address, Owner owner)
         {
-            Property p = new Property();
-            p.Type = property.Type;
-            p.Description = property.Description;
-            p.Rooms = property.Rooms;
-            p.Area = property.Area;
-            p.Washer = property.Washer;
-            p.Refrigerator = p.Refrigerator;
-            p.Iron = property.Iron;
+            if(property == null)
+            {
+                throw new Exception("Property object cannot be null.");
+            }
+            if (owner == null)
+            {
+                throw new Exception("Owner object cannot be null.");
+            }
+            if (address == null)
+            {
+                throw new Exception("Address object cannot be null.");
+            }
 
-            p.OwnerId = p.OwnerId;
-            p.Owner = property.Owner;
+            property.Id = 0;
 
-            p.AddressId = property.AddressId;
-            p.Address = property.Address;
+            property.Owner = owner;
+            property.OwnerId = owner.OwnerId;
 
-            _databaseContext.Add(p);
+            property.Address = address;
+            property.AddressId = address.AddressId;
+
+            _databaseContext.Properties.Add(property);
+            _databaseContext.SaveChanges();
+            return property.Id;
+        }
+
+        public void DeleteProperty(Property property, Owner owner, Address address)
+        {
+            if (property == null)
+            {
+                throw new Exception("Property object cannot be null.");
+            }
+            if (owner == null)
+            {
+                throw new Exception("Owner object cannot be null.");
+            }
+            if (address == null)
+            {
+                throw new Exception("Address object cannot be null.");
+            }
+
+            _databaseContext.Properties.Remove(property);
+            _databaseContext.SaveChanges();
+
+            _databaseContext.Owners.Remove(owner);
+            _databaseContext.SaveChanges();
+
+            _databaseContext.Addresses.Remove(address);
             _databaseContext.SaveChanges();
         }
 
-        public void DeleteProperty(int propertyId)
+        int IPropertyRepository.EditProperty(Property property)
         {
-            _databaseContext.Properties.Remove(GetPropertyById(propertyId));
-        }
+            if(property == null)
+            {
+                throw new Exception("Property object cannot be null.");
+            }
 
-        public void EditProperty(Property property)
-        {
-            // sie dorobi
-        }
+            _databaseContext.Properties.Update(property);
+            _databaseContext.SaveChanges();
 
+            return property.Id;
+        }
     }
 }
